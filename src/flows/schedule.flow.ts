@@ -55,7 +55,7 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extension
     const isDateAvailable = listParse.every(({ fromDate, toDate }) => !isWithinInterval(desiredDate, { start: fromDate, end: toDate }));
 
     if(!isDateAvailable){
-        const m = 'Lo siento, esa hora ya está reservada. ¿Alguna otra fecha y hora?';
+        const m = ' Lo siento, esa hora ya está ocupada. ¿Otra dia  o hora? ⏰';
         await flowDynamic(m);
         await handleHistory({ content: m, role: 'assistant' }, state);
         return endFlow()
@@ -63,7 +63,7 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extension
 
     const formattedDateFrom = format(desiredDate, 'hh:mm a');
     const formattedDateTo = format(addMinutes(desiredDate, +DURATION_MEET), 'hh:mm a');
-    const message = `¡Perfecto! Tenemos disponibilidad de ${formattedDateFrom} a ${formattedDateTo} el día ${format(desiredDate, 'dd/MM/yyyy')}. ¿Confirmo tu reserva? *si*`;
+    const message = `¡Perfecto! Tenemos disponibilidad de ${formattedDateFrom} a ${formattedDateTo} el día ${format(desiredDate, 'dd/MM/yyyy')}. ¿Confirmo tu reserva? Responda *SI* o *NO*`;
     await handleHistory({ content: message, role: 'assistant' }, state);
     await state.update({ desiredDate })
 

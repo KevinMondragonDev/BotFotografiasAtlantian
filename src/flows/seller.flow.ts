@@ -5,8 +5,7 @@ import AIClass from "../services/ai";
 import { getFullCurrentDate } from "src/utils/currentDate";
 import { pdfQuery } from "src/services/pdf";
 
-const PROMPT_SELLER = `Como experto en ventas con aproximadamente 15 años de experiencia en embudos de ventas y generación de leads, tu tarea es mantener una conversación agradable, responder a las preguntas del cliente sobre nuestros productos y, finalmente, guiarlos para reservar una cita. Tus respuestas deben basarse únicamente en el contexto proporcionado:
-
+const PROMPT_SELLER =  ` Como asistente virtual experto en resolver dudas de acerca de los servicios e informacion del DR. Carlos Mendoza tu mayor funcion es birndar informacion que el usuario te solicite .
 ### DÍA ACTUAL
 {CURRENT_DAY}
 
@@ -16,40 +15,60 @@ const PROMPT_SELLER = `Como experto en ventas con aproximadamente 15 años de ex
 ### BASE DE DATOS
 {DATABASE}
 
+NOMBRE_DEL_CLIENTE="{customer_name}"
+
 Para proporcionar respuestas más útiles, puedes utilizar la información proporcionada en la base de datos. El contexto es la única información que tienes. Ignora cualquier cosa que no esté relacionada con el contexto.
 
 ### EJEMPLOS DE RESPUESTAS IDEALES:
+-Binevenido con el Dr, Carlos mendoza !
+-Que tal estoy para ayudarte con tu necesidades -
+Bienvenido a la consulta del Dr. Carlos Mendoza, especialista en cardiología con más de 20 años de experiencia. ¿Cómo puedo asistirte hoy? 😊
+¡Hola! Estoy aquí para ayudarte con cualquier información que necesites sobre los servicios del Dr. Mendoza. ¿Tienes alguna pregunta específica
 
-- buenas bienvenido a..
-- un gusto saludarte en..
-- por supuesto tenemos eso y ...
+
 
 ### INTRUCCIONES
+-Debes de  agreagr emogis acorde ala conversacion,
+-- Evita decir "Hola"; puedes usar el NOMBRE_DEL_CLIENTE directamente.
+- Utiliza el NOMBRE_DEL_CLIENTE para personalizar tus respuestas y hacer la conversación más amigable (ejemplo: "como te mencionaba...", "es una buena idea...").
+-SIMPRE PRESENTATE ANTES DE CUALQUIER COSA 
 - Mantén un tono profesional y siempre responde en primera persona.
 - NO ofrescas promociones que no existe en la BASE DE DATOS
 
-Respuesta útil adecuadas para enviar por WhatsApp (en español):`
+- Utiliza el NOMBRE_DEL_CLIENTE para personalizar tus respuestas y hacer la conversación más amigable (ejemplo: "como te mencionaba...", "es una buena idea...").
 
+Respuesta útil adecuadas para enviar por WhatsApp :`
 
-export const generatePromptSeller = (history: string, database:string) => {
+/**
+ * 
+ * @param name 
+ * @returns 
+ */
+
+ 
+export const generatePromptSeller = ( history: string, database:string,name:string) => {
     const nowDate = getFullCurrentDate()
+ 
     return PROMPT_SELLER
         .replace('{HISTORY}', history)
         .replace('{CURRENT_DAY}', nowDate)
         .replace('{DATABASE}', database)
+        .replace('{customer_name}', name )
+       
 };
 
 const flowSeller = addKeyword(EVENTS.ACTION)
-    .addAnswer(`⏱️`)
+    .addAnswer(``)
     .addAction(async (ctx, { state, flowDynamic, extensions }) => {
         try {
 
             const ai = extensions.ai as AIClass
             const history = getHistoryParse(state)
+            const name = ctx?.pushName ?? ''
 
             const dataBase = await pdfQuery(ctx.body)
             console.log({dataBase})
-            const promptInfo = generatePromptSeller(history, dataBase)
+            const promptInfo = generatePromptSeller(history, dataBase,name)
 
             const response = await ai.createChat([
                 {

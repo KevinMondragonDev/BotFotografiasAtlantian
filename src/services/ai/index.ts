@@ -56,7 +56,7 @@ class AIClass {
                 model: model ?? this.model,
                 messages,
                 temperature,
-                max_tokens: 256,
+                max_tokens: 400,
                 top_p: 0,
                 frequency_penalty: 0,
                 presence_penalty: 0,
@@ -138,7 +138,7 @@ class AIClass {
         messages: ChatCompletionMessageParam[],
         model?: string,
         temperature = 0
-    ): Promise<{ available?: boolean, confirm: boolean, bookDate: string, bestAnswer: string }> => {
+    ): Promise<{ available?: boolean, confirm: boolean, bookDate: string, bestAnswer: string, }> => {
         try {
             const completion = await this.openai.chat.completions.create({
                 model: model ?? this.model,

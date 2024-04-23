@@ -10,13 +10,14 @@ const PROMPT_DISCRIMINATOR = `### Historial de Conversación (Vendedor/Cliente) 
 ### Intenciones del Usuario ###
 
 **HABLAR**: Selecciona esta acción si el cliente parece querer hacer una pregunta o necesita más información.
-**PROGRAMAR**: Selecciona esta acción si el cliente muestra intención de programar una cita.
+**AGENDAR**: Selecciona esta acción si el cliente muestra intención de programar una cita.
+**TERMINAR**: Selecciona  esta opción si el cliente se desvía del tema principal y empieza a hablar de forma incoherente. Esta acción te permitirá redirigir la conversación de manera efectiva y mantener el enfoque en los puntos relevantes, asegurando una comunicación clara y productiva
 
 ### Instrucciones ###
 
 Por favor, clasifica la siguiente conversación según la intención del usuario.`
 
-export default async (_: BotContext, { state, gotoFlow, extensions }: BotMethods) => {
+export default async (_: BotContext, { state, gotoFlow,  endFlow ,extensions }: BotMethods) => {
     const ai = extensions.ai as AIClass
     const history = getHistoryParse(state)
     const prompt = PROMPT_DISCRIMINATOR
@@ -35,5 +36,6 @@ export default async (_: BotContext, { state, gotoFlow, extensions }: BotMethods
     console.log({ prediction })
 
     if (prediction.includes('HABLAR')) return gotoFlow(flowSeller)
-    if (prediction.includes('PROGRAMAR')) return gotoFlow(flowSchedule)
+    if (prediction.includes('AGENDAR')) return gotoFlow(flowSchedule)
+          if (prediction.includes('TERMINAR')) return endFlow
 }

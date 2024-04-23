@@ -1,4 +1,4 @@
-import { MAKE_ADD_TO_CALENDAR, MAKE_GET_FROM_CALENDAR } from 'src/config'
+import { MAKE_ADD_TO_CALENDAR, MAKE_DELETE_FROM_CALENDAR, MAKE_GET_FROM_CALENDAR } from 'src/config'
 
 /**
  * get calendar
@@ -35,4 +35,25 @@ const appToCalendar = async (payload: { name: string, email: string, startDate: 
     }
 }
 
-export { getCurrentCalendar, appToCalendar }
+
+/**
+ * Elimina un evento del calendario mediante una petición POST.
+ * @param body Identificador del evento a eliminar.
+ * @returns Promise resolviendo a la respuesta de la API.
+ */
+const deleteFromCalendar = async (payload: { name: string, phone: string }) => {
+    try {
+        const dataApi = await fetch(MAKE_DELETE_FROM_CALENDAR, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        })
+        return dataApi
+    } catch (err) {
+        console.log(`error: `, err)
+    }
+}
+
+export { getCurrentCalendar, appToCalendar , deleteFromCalendar}
