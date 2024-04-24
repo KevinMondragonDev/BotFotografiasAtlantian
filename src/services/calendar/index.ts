@@ -20,7 +20,7 @@ const getCurrentCalendar = async (): Promise<string[]> => {
  * @param body 
  * @returns 
  */
-const appToCalendar = async (payload: { name: string, email: string, startDate: string, endData: string, phone: string }) => {
+const appToCalendar = async (payload: {folio:any, name: string, email: string, startDate: string, endData: string, phone: string }) => {
     try {
         const dataApi = await fetch(MAKE_ADD_TO_CALENDAR, {
             method: 'POST',
