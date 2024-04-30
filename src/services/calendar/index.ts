@@ -35,13 +35,14 @@ const appToCalendar = async (payload: {folio:any, name: string, email: string, s
     }
 }
 
-
 /**
- * Elimina un evento del calendario mediante una petición POST.
- * @param body Identificador del evento a eliminar.
- * @returns Promise resolviendo a la respuesta de la API.
+ * add to calendar
+ * @param body 
+ * @returns 
  */
-const deleteFromCalendar = async (payload: { name: string, phone: string }) => {
+
+
+const deleteDatesByFolio = async (payload: {folio:string }) => {
     try {
         const dataApi = await fetch(MAKE_DELETE_FROM_CALENDAR, {
             method: 'POST',
@@ -56,4 +57,7 @@ const deleteFromCalendar = async (payload: { name: string, phone: string }) => {
     }
 }
 
-export { getCurrentCalendar, appToCalendar , deleteFromCalendar}
+
+
+
+export { getCurrentCalendar,deleteDatesByFolio, appToCalendar}

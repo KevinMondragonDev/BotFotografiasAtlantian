@@ -1,8 +1,7 @@
 import { addKeyword, EVENTS } from "@builderbot/bot";
 import { clearHistory } from "../utils/handleHistory";
-import { addMinutes, eachMonthOfInterval, format, addDays } from "date-fns";
+import { addMinutes, format } from "date-fns";
 import { appToCalendar } from "src/services/calendar";
-import { v4 as uuidv4 } from 'uuid';
 
 //uuid dependencias
 let contador = 0;  // Contador global para asegurar un componente único

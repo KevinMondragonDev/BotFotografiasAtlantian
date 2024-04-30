@@ -49,7 +49,7 @@ class AIClass {
     createChat = async (
         messages: ChatCompletionMessageParam[],
         model?: string,
-        temperature = 0
+        temperature = .5
     ) => {
         try {
             const completion = await this.openai.chat.completions.create({

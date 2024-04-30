@@ -53,14 +53,15 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extension
     const desiredDate = parse(date, 'yyyy/MM/dd HH:mm:ss', new Date());
 
     const isDateAvailable = listParse.every(({ fromDate, toDate }) => !isWithinInterval(desiredDate, { start: fromDate, end: toDate }));
-
+    /* Kevin Mondragon
+    Elimine esta parte del codigo para que busque una opcion directo para agendar un dia de consulta
     if(!isDateAvailable){
-        const m = ' Lo siento, esa hora ya está ocupada. ¿Otra dia  o hora? ⏰';
+        const m = ' Podria ser  ⏰';
         await flowDynamic(m);
         await handleHistory({ content: m, role: 'assistant' }, state);
         return endFlow()
     }
-
+    */
     const formattedDateFrom = format(desiredDate, 'hh:mm a');
     const formattedDateTo = format(addMinutes(desiredDate, +DURATION_MEET), 'hh:mm a');
     const message = `¡Perfecto! Tenemos disponibilidad de ${formattedDateFrom} a ${formattedDateTo} el día ${format(desiredDate, 'dd/MM/yyyy')}. ¿Confirmo tu reserva? Responda *SI* o *NO*`;
