@@ -14,8 +14,8 @@ const DURATION_MEET = process.env.DURATION_MEET ?? 45
 /**
  * Encargado de pedir los datos necesarios para registrar el evento en el calendario
  */
-const flowCancelar= addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic }) => {
-    await flowDynamic(`Muy bien, ¡Vamos a agendar tu cita! 📝👀 Necesito algunos datos importantes de su parte.🌟Este es un proceso un poquito mas rigido`)
+const flowCancelar= addKeyword("cancelar").addAction(async (_, { flowDynamic }) => {
+    await flowDynamic(`Llegaste al flujo cancelar`)
     await flowDynamic('🗣️Puedes cancelar el proceso en cualquier momento con la palabra "Cancelar"🚫')
     await flowDynamic('¿Cuál es su nombre? 👤😊')
 })

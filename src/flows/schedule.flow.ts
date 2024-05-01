@@ -5,8 +5,10 @@ import { generateTimer } from "../utils/generateTimer";
 import { getCurrentCalendar } from "../services/calendar";
 import { getFullCurrentDate } from "src/utils/currentDate";
 import { flowConfirm } from "./confirm.flow";
-import { addMinutes, isWithinInterval, format, parse } from "date-fns";
 
+import { clearHistory } from "../utils/handleHistory";
+import { addMinutes, isWithinInterval, format, parse } from "date-fns";
+import { welcomeFlow } from "./welcome.flow";
 const DURATION_MEET = process.env.DURATION_MEET ?? 45
 
 const PROMPT_FILTER_DATE = `
@@ -72,12 +74,18 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extension
     for (const chunk of chunks) {
         await flowDynamic([{ body: chunk.trim(), delay: generateTimer(150, 250) }]);
     }
-}).addAction({capture:true}, async ({body},{gotoFlow, flowDynamic, state}) => {
+})
 
-    if(body.toLowerCase().includes('si')) return gotoFlow(flowConfirm)
+.addAction({capture:true}, async ({body, ctx},{gotoFlow, flowDynamic, state, endFlow }) => {
+   
+    if (body.toLocaleLowerCase().includes('si')) {
+        return gotoFlow(flowConfirm)
+    } 
+    if (body.toLocaleLowerCase().includes('no')) {
+        clearHistory(state)
+        return endFlow("¿Tiene alguna otra consulta o algo en que pueda asistirte? 🤔💬")
+    }
     
-    await flowDynamic('¿Alguna otra fecha y hora?')
-    await state.update({desiredDate:null})
 })
 
 export { flowSchedule }
