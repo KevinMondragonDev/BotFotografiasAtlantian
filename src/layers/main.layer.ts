@@ -36,11 +36,11 @@ export default async (_: BotContext, { state, gotoFlow,  endFlow ,extensions }: 
         }
     ], 'gpt-3.5-turbo')
 
-
+    
     console.log({ prediction })
 
     if (prediction.includes('HABLAR')) return gotoFlow(flowSeller)
+    if (prediction.includes('ORIENTAR')) return gotoFlow(flowSeller)  
     if (prediction.includes('AGENDAR')) return gotoFlow(flowSchedule)
-    if (prediction.includes('CANCELAR')) return gotoFlow(flowCancelar)
      if (prediction.includes('TERMINAR')) return endFlow
 }

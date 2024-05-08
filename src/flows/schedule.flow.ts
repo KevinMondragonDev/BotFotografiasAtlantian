@@ -8,7 +8,6 @@ import { flowConfirm } from "./confirm.flow";
 
 import { clearHistory } from "../utils/handleHistory";
 import { addMinutes, isWithinInterval, format, parse } from "date-fns";
-import { welcomeFlow } from "./welcome.flow";
 const DURATION_MEET = process.env.DURATION_MEET ?? 45
 
 const PROMPT_FILTER_DATE = `
@@ -57,6 +56,7 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extension
     const isDateAvailable = listParse.every(({ fromDate, toDate }) => !isWithinInterval(desiredDate, { start: fromDate, end: toDate }));
     /* Kevin Mondragon
     Elimine esta parte del codigo para que busque una opcion directo para agendar un dia de consulta
+     
     if(!isDateAvailable){
         const m = ' Podria ser  ⏰';
         await flowDynamic(m);

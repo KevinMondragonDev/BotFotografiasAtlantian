@@ -15,10 +15,13 @@
   "dependencies": {
     "@builderbot-plugins/telegram": "^1.0.0",
     "@builderbot/bot": "1.0.6-alpha.0",
+    "@builderbot/database-mongo": "^1.1.5",
+    "@builderbot/database-mysql": "^1.1.4",
     "@builderbot/provider-baileys": "1.0.6-alpha.0",
     "date-fns": "^3.3.1",
     "dotenv": "^16.4.2",
     "multer": "1.4.5-lts.1",
+    "mysql": "^2.18.1",
     "openai": "^4.28.0",
     "uuid": "^9.0.1"
   },
