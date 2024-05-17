@@ -12,6 +12,9 @@ RUN apk add --no-cache \
 
 COPY . .
 RUN pnpm i
+
+# Exponer el puerto
+EXPOSE 3000
 RUN pnpm build
 
 #Etapa de producción
@@ -19,7 +22,7 @@ FROM builder as deploy
 
 ARG RAILWAY_STATIC_URL
 ARG PUBLIC_URL
-ARG PORT
+#ARG PORT
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 
