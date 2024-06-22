@@ -1,11 +1,11 @@
-import { MAKE_ADD_TO_CALENDAR, MAKE_DELETE_FROM_CALENDAR, MAKE_GET_FROM_CALENDAR } from 'src/config'
+import {luxz_validate_graduate, luxzIDEvent } from 'src/config'
 
 /**
  * get calendar
  * @returns 
  */
 const getCurrentCalendar = async (): Promise<string[]> => {
-    const dataCalendarApi = await fetch(MAKE_GET_FROM_CALENDAR)
+    const dataCalendarApi = await fetch(luxzIDEvent)
     const json: { date: string, name: string }[] = await dataCalendarApi.json()
     console.log({ json })
     const list = json.filter(({date, name}) => !!date && !!name).reduce((prev, current) => {
@@ -20,44 +20,69 @@ const getCurrentCalendar = async (): Promise<string[]> => {
  * @param body 
  * @returns 
  */
-const appToCalendar = async (payload:{nombre: string; email: string; telefono: string; personaAVisitar?: string; motivo?: string; empleado: any;}) => {
+const ExistsEvent = async (key:string) => {
     try {
-        const dataApi = await fetch(MAKE_ADD_TO_CALENDAR, {
+        const payload = {
+            event_key: key
+        };
+
+        const response = await fetch(luxzIDEvent, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(payload)
-        })
-        return dataApi
-    } catch (err) {
-        console.log(`error: `, err)
-    }
-}
+        });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return { success: data.success === true, title: data.title};
+    } catch (err) {
+        console.error('Error:', err);
+        return { success: false };
+    }
+};
 /**
  * add to calendar
  * @param body 
  * @returns 
  */
-
-
-const deleteDatesByFolio = async (payload: {folio:string }) => {
+const validateGraduate = async (email_or_name:string) => {
     try {
-        const dataApi = await fetch(MAKE_DELETE_FROM_CALENDAR, {
+        const payload = {
+            email_or_name: email_or_name
+        };
+
+        const response = await fetch(luxz_validate_graduate, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(payload)
-        })
-        return dataApi
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return {
+            success: data.success === true,
+            graduate: data.graduate
+        };
     } catch (err) {
-        console.log(`error: `, err)
+        console.error('Error:', err);
+        return { success: false };
     }
-}
+};
 
 
 
 
-export { getCurrentCalendar,deleteDatesByFolio, appToCalendar}
+
+
+
+export { validateGraduate, ExistsEvent}

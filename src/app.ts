@@ -11,7 +11,7 @@ const PORT = 3301;
 const main = async () => {
 
     const { httpServer } = await createBot({
-        database: adapterDB,
+        database: new MemoryDB(),
         provider,
         flow,
     })
