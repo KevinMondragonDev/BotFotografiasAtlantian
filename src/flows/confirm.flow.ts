@@ -148,6 +148,7 @@ const flowConfirm = addKeyword(["pagar", "uno", "UNO", "primera"])
 
         // Obtain and update the event key in the state
         await state.update({ Number_tickets: ctx.body });
+            
         
         const Number_tickets = state.get('Number_tickets');
 
@@ -165,6 +166,7 @@ const flowConfirm = addKeyword(["pagar", "uno", "UNO", "primera"])
         
          
     })
+    
     .addAction({ capture: true }, async (ctx, { state, flowDynamic, fallBack, endFlow }) => {
         if (ctx.body.toLowerCase().includes('cancelar')) {
             localClearHistory(state);
@@ -187,31 +189,12 @@ const flowConfirm = addKeyword(["pagar", "uno", "UNO", "primera"])
         formData.append('image', Voucher); // Assuming Voucher is a file or base64 string
         formData.append('quantity', Number_tickets);
         formData.append('amount', '120000'); // Replace with actual amount if needed
-
-        try {
-            const response = await fetch('https://chatbot.luxze.mx/upload-image', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            if (data.success) {
-                await flowDynamic('Tu pago ha sido registrado exitosamente. 🎉');
-            } else {
-                await flowDynamic('Hubo un problema al registrar tu pago. Por favor intenta nuevamente.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            await flowDynamic('Ocurrió un error al procesar tu pago. Por favor intenta nuevamente.');
-        }
+        
+        
+        
 
         localClearHistory(state);
     });
-
     
 function localClearHistory(state) {
     state.update({ key: null, counter: 0, email: null, personaAVisitar: null, motivo: null, telefono: null });
