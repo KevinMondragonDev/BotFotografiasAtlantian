@@ -6,9 +6,7 @@ import {flowfinish} from "src/Adios";
 
 const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
 .addAction(async (_, { flowDynamic }) => {
-    await flowDynamic(`Muy bien, ¡Vamos a buscar tu evento! 📝👀 Necesito algunos datos importantes de su parte.🌟`);
-    await flowDynamic('🗣️Puedes cancelar el proceso en cualquier momento con la palabra "Cancelar"🚫');
-    await flowDynamic('¿Cuál es su correo? 🔑📅');
+    await flowDynamic(`Por favor, proporciona el nombre completo o correo electrónico con el que te registraste en nuestra plataforma Luxze.`);
 })
 /*
     .addAction(async (_, { flowDynamic }) => {
@@ -76,9 +74,23 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
         if (user.success) {
             //localClearHistory(state);
             console.log(user)
-            const { id_graduado, nombre_graduado, correo_graduado, clave_graduado, tipo_usuario, estado_graduado, id_evento_graudado, boletos_contrato, boletos_pagados, mesas_graduado, contrato_graduado } = user.graduate;
+            const {
+                id_graduado,
+                nombre_graduado,
+                correo_graduado,
+                clave_graduado,
+                tipo_usuario,
+                estado_graduado,
+                id_evento_graudado,
+                boletos_contrato,
+                boletos_pagados,
+                mesas_graduado,
+                contrato_graduado
+            } = user.graduate;
+
             await state.update({
                 graduate: user.graduate,
+                amount: user.amount,
                 from: ctx.from,
                 id_graduado,
                 nombre_graduado,
@@ -92,25 +104,24 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
                 mesas_graduado,
                 contrato_graduado
             });
-            
 
-            
-            await flowDynamic(  `'${nombre_graduado}', tienes ${boletos_contrato} boletos en contrato, de los cuales has pagado: ${boletos_pagados}`);
-            await flowDynamic(`El precio por boleto es de $ ' dato Faltante del Backend'`);
-            await flowDynamic( " ");
+            await flowDynamic(`'${nombre_graduado}', tienes ${boletos_contrato} boletos en contrato, de los cuales has pagado: ${boletos_pagados}`);
+            await flowDynamic(`El precio por boleto es de ${user.amount} pesos💰🎫`);
+            await flowDynamic(`Tu deuda actual sería de ${boletos_contrato - boletos_pagados} boletos por un total de ${user.amount * (boletos_contrato - boletos_pagados)} pesos💰🎫`);
+
            
 
             if( boletos_pagados === boletos_contrato  ){
                 return endFlow("Dado a que has pagado todos los boletos, de mi parte seria todo 📞👨‍💼");
             }
             
-                await flowDynamic( "¿Qué le gustaría hacer? 😊");
-                await flowDynamic( "1️⃣ Pagar tus boletos 🎫");
-                await flowDynamic( "2️⃣ Salir 👋🏽");        
+                await flowDynamic( "Selecciona qué quieres hacer:");
+                await flowDynamic( "1️⃣ Pagar tus boleto(s)");
+                await flowDynamic( "2️⃣ Finalizar conversación");        
             
             
             
-                await flowDynamic("(Responde con el numero de la accion que deseas📝📧)");
+                await flowDynamic("Por favor, responde ingresando el número de la opción que deseas. ✨");
 
 
                 
@@ -118,7 +129,7 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
         } else {
             if (counter < 2) {
                 await state.update({ counter: counter + 1 });
-                return fallBack("No encuentro este usuario . Prueba con algo como 'MKT2025' o 'INGSALLE24'🤔❓");
+                return fallBack("No encuentro este usuario . Prueba con algo como 'Atlantian@gmail.com' o 'tunombre@gmail.com'🤔❓");
             } else {
                 localClearHistory(state);
                 return endFlow("Hasta luego. 🌟👋");
@@ -129,20 +140,28 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
     //hasta aqui me quede 
 
      
-    .addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow }) => {
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic,fallBack, endFlow }) => {
         if (ctx.body.toLowerCase().includes('1')) {
             localClearHistory(state);
-            await flowDynamic(`Vamooos a pagar esos boletos`);
+            
+            await flowDynamic(`¿Cuántos boletos quieres pagar?`);
+            await flowDynamic(`Escribe el número de boletos que deseas adquirir. ✨`);
             // Save the person to visit
             
-            await flowDynamic(`¿Cuantos boletos va a comprar?`);
+        }
+        if (ctx.body === '2') { 
+            localClearHistory(state);
+            return endFlow("Hasta luego 🌟👋");
+            // Save the person to visit
+            
         }
         if (ctx.body !== '1') { 
             localClearHistory(state);
-            return endFlow("Lo siento, no puedo encontrar el evento. Llamaré a un asesor para asistirte. 📞👨‍💼");
+            return fallBack("Selecciona una opción válida como 1️⃣ o 2️⃣ 🤔🚀");
             // Save the person to visit
             
         }
+        
         
        
         
@@ -178,21 +197,21 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
          
     })
     .addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
-        await flowDynamic("¿Qué más te gustaría hacer? 😊");
-        await flowDynamic("3️⃣ Confirmo que ya realicé mi pago🧾");
-        await flowDynamic("4️⃣ Hablar con un asesor 📞👨‍💼");
+        await flowDynamic("¿Confirmarmos el pago? 😊");
+        await flowDynamic("1️⃣ Confirmo que ya realicé mi pago🧾");
+        await flowDynamic("2️⃣ Finalizar conversación");
     })
     .addAction({ capture: true }, async (ctx, { state, flowDynamic, fallBack, endFlow }) => {
         const userInput = ctx.body.toLowerCase();
 
-        if (userInput === '3') {
+        if (userInput === '1') {
             localClearHistory(state);
             return endFlow("Perfecto, tu pago será revisado y te confirmamos su realización 🤔💬");
         }
 
-        if (userInput === '4') {
+        if (userInput === '2') {
             localClearHistory(state);
-            return endFlow("Tu número de tu empresa por ahora no lo tenemos, pero lo agregaremos en cuanto lo tengamos 🤔🚀");
+            return endFlow("Hasta luego. 🌟👋");
         }
 
         return fallBack("Necesitas escoger alguna opción válida como 3️⃣ o 4️⃣ 🤔🚀");
