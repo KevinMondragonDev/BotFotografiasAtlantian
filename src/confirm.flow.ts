@@ -1,0 +1,208 @@
+import { addKeyword, EVENTS } from "@builderbot/bot";
+
+import { createFlow } from "@builderbot/bot";
+import { ExistsEvent, validateGraduate } from "src/services/backend";
+import {flowfinish} from "src/Adios";
+
+const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
+.addAction(async (_, { flowDynamic }) => {
+    await flowDynamic(`Muy bien, ¡Vamos a buscar tu evento! 📝👀 Necesito algunos datos importantes de su parte.🌟`);
+    await flowDynamic('🗣️Puedes cancelar el proceso en cualquier momento con la palabra "Cancelar"🚫');
+    await flowDynamic('¿Cuál es su correo? 🔑📅');
+})
+/*
+    .addAction(async (_, { flowDynamic }) => {
+        await flowDynamic(`Muy bien, ¡Vamos a buscar tu evento! 📝👀 Necesito algunos datos importantes de su parte.🌟`);
+        await flowDynamic('🗣️Puedes cancelar el proceso en cualquier momento con la palabra "Cancelar"🚫');
+        await flowDynamic('¿Cuál es la clave de su evento? 🔑📅');
+    })
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic, fallBack, endFlow }) => {
+        localClearHistory(state);
+        if (ctx.body.toLowerCase().includes('cancelar')) {
+            localClearHistory(state);
+            return endFlow("¿Tiene alguna otra consulta o algo en que pueda asistirte? 🤔💬");
+        }
+
+        if (!state.get('counter')) {
+            await state.update({ counter: 0 });
+        }
+
+        // Obtain and update the event key in the state
+        await state.update({ key: ctx.body });
+        const key = state.get('key');
+        const counter = state.get('counter');
+
+        const verificate = await ExistsEvent(key);
+        console.warn(counter);
+
+        if (verificate.success) {
+            localClearHistory(state);
+            await flowDynamic("¡Evento encontrado con éxito! 🎉📅");
+            await flowDynamic(`Tu evento es '${verificate.title}' 🎈🎊`);
+            await flowDynamic("Por favor nos podria proporcionar su nombre o Correo Electronico");
+            await flowDynamic("(con el que te registraste en nuestra plataforma Luxze📝📧)");
+            
+        } else {
+            if (counter < 2) {
+                await state.update({ counter: counter + 1 });
+                return fallBack("No encuentro esta clave. Prueba con algo como 'MKT2025' o 'INGSALLE24'🤔❓");
+            } else {
+                localClearHistory(state);
+                return endFlow("Lo siento, no puedo encontrar el evento. Llamaré a un asesor para asistirte. 📞👨‍💼");
+            }
+        }
+    })
+*/
+
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic,fallBack, endFlow }) => {
+          
+         if (ctx.body.toLowerCase().includes('cancelar')) {
+            localClearHistory(state);
+            return endFlow("¿Tiene alguna otra consulta o algo en que pueda asistirte? 🤔💬");
+        }
+
+        if (!state.get('counter')) {
+            await state.update({ counter: 0 });
+        }
+
+        // Obtain and update the event key in the state
+        await state.update({ email_or_name: ctx.body });
+        const email_or_name = state.get('email_or_name');
+        const counter = state.get('counter');
+
+        const user = await validateGraduate(email_or_name);
+        console.warn(counter);
+
+        if (user.success) {
+            //localClearHistory(state);
+            console.log(user)
+            const { id_graduado, nombre_graduado, correo_graduado, clave_graduado, tipo_usuario, estado_graduado, id_evento_graudado, boletos_contrato, boletos_pagados, mesas_graduado, contrato_graduado } = user.graduate;
+            await state.update({
+                graduate: user.graduate,
+                from: ctx.from,
+                id_graduado,
+                nombre_graduado,
+                correo_graduado,
+                clave_graduado,
+                tipo_usuario,
+                estado_graduado,
+                id_evento_graudado,
+                boletos_contrato,
+                boletos_pagados,
+                mesas_graduado,
+                contrato_graduado
+            });
+            
+
+            
+            await flowDynamic(  `'${nombre_graduado}', tienes ${boletos_contrato} boletos en contrato, de los cuales has pagado: ${boletos_pagados}`);
+            await flowDynamic(`El precio por boleto es de $ ' dato Faltante del Backend'`);
+            await flowDynamic( " ");
+           
+
+            if( boletos_pagados === boletos_contrato  ){
+                return endFlow("Dado a que has pagado todos los boletos, de mi parte seria todo 📞👨‍💼");
+            }
+            
+                await flowDynamic( "¿Qué le gustaría hacer? 😊");
+                await flowDynamic( "1️⃣ Pagar tus boletos 🎫");
+                await flowDynamic( "2️⃣ Salir 👋🏽");        
+            
+            
+            
+                await flowDynamic("(Responde con el numero de la accion que deseas📝📧)");
+
+
+                
+                
+        } else {
+            if (counter < 2) {
+                await state.update({ counter: counter + 1 });
+                return fallBack("No encuentro este usuario . Prueba con algo como 'MKT2025' o 'INGSALLE24'🤔❓");
+            } else {
+                localClearHistory(state);
+                return endFlow("Hasta luego. 🌟👋");
+            }
+        }
+    })
+    
+    //hasta aqui me quede 
+
+     
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow }) => {
+        if (ctx.body.toLowerCase().includes('1')) {
+            localClearHistory(state);
+            await flowDynamic(`Vamooos a pagar esos boletos`);
+            // Save the person to visit
+            
+            await flowDynamic(`¿Cuantos boletos va a comprar?`);
+        }
+        if (ctx.body !== '1') { 
+            localClearHistory(state);
+            return endFlow("Lo siento, no puedo encontrar el evento. Llamaré a un asesor para asistirte. 📞👨‍💼");
+            // Save the person to visit
+            
+        }
+        
+       
+        
+        
+    })
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic,fallBack, endFlow }) => {
+
+        const boletos_contrato = state.get('boletos_contrato');
+        const boletos_pagados = state.get('boletos_pagados');
+        const boletos_restantes =boletos_contrato - boletos_pagados;
+
+
+        // Obtain and update the event key in the state
+        await state.update({ Number_tickets: ctx.body });
+        const amount = state.get('amount'); 
+        
+        const Number_tickets = state.get('Number_tickets');
+
+        if(Number_tickets > 12 || Number_tickets < 1 || Number_tickets < boletos_restantes ){
+            if (Number_tickets > boletos_restantes){
+                return fallBack("No puedes pagar mas de lo que debes🤔❓");
+            } else if(Number_tickets > 12 || Number_tickets < 1) {
+                return fallBack("No pueden ser mayor que 12 o menor que 1🤔❓");
+            }
+            
+        }
+        const totalAmount = Number_tickets * amount;
+        await flowDynamic(`💳 Por favor realiza una transferencia SPEI por la cantidad de ${totalAmount} pesos a la siguiente información bancaria:💳 0957987465234233 Clabe: 0847575893020`);
+
+        // Añadir detalles sobre cómo y dónde enviar el comprobante, con uso de emojis para destacar acciones
+        await flowDynamic(`📸 Una vez realizada la transferencia, por favor envía una imagen del comprobante para confirmar tu pago. Puedes hacerlo accediendo a este enlace: (https://luxze.mx/comprobantes)`);
+        
+         
+    })
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
+        await flowDynamic("¿Qué más te gustaría hacer? 😊");
+        await flowDynamic("3️⃣ Confirmo que ya realicé mi pago🧾");
+        await flowDynamic("4️⃣ Hablar con un asesor 📞👨‍💼");
+    })
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic, fallBack, endFlow }) => {
+        const userInput = ctx.body.toLowerCase();
+
+        if (userInput === '3') {
+            localClearHistory(state);
+            return endFlow("Perfecto, tu pago será revisado y te confirmamos su realización 🤔💬");
+        }
+
+        if (userInput === '4') {
+            localClearHistory(state);
+            return endFlow("Tu número de tu empresa por ahora no lo tenemos, pero lo agregaremos en cuanto lo tengamos 🤔🚀");
+        }
+
+        return fallBack("Necesitas escoger alguna opción válida como 3️⃣ o 4️⃣ 🤔🚀");
+        localClearHistory(state);
+    })
+    
+    
+    
+function localClearHistory(state) {
+    state.update({ key: null, counter: 0, email: null, personaAVisitar: null, motivo: null, telefono: null });
+}
+
+export { flowtesting };

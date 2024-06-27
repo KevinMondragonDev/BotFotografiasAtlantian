@@ -1,0 +1,32 @@
+{
+  "name": "base-bailey-json",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./dist/app.js",
+    "lint": "eslint . --no-ignore",
+    "dev": "npm run lint && nodemon ./src/app.ts",
+    "build": "npx rollup -c"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@builderbot/bot": "1.1.6",
+    "@builderbot/provider-baileys": "1.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-builderbot": "latest",
+    "nodemon": "^3.1.1",
+    "rollup": "^4.18.0",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5"
+  },
+  "author": "",
+  "license": "ISC"
+}
