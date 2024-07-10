@@ -56,7 +56,7 @@ const flowpagarBoletos = addKeyword(["2", "dos", "DOS", "boletos"])
           
     if (ctx.body.toLowerCase().includes('cancelar')) {
        localClearHistory(state);
-       return endFlow("¿Tiene alguna otra consulta o algo en que pueda asistirte? 🤔💬");
+       return endFlow("Hasta luego💬");
    }
 
    if (!state.get('counter')) {
@@ -120,7 +120,6 @@ const flowpagarBoletos = addKeyword(["2", "dos", "DOS", "boletos"])
            await flowDynamic( "2️⃣ Finalizar conversación");        
        
        
-       
            await flowDynamic("Por favor, responde ingresando el número de la opción que deseas. ✨");
 
 
@@ -181,13 +180,14 @@ const flowpagarBoletos = addKeyword(["2", "dos", "DOS", "boletos"])
         
         const Number_tickets = state.get('Number_tickets');
 
-        if(Number_tickets > 12 || Number_tickets < 1 || Number_tickets < boletos_restantes ){
-            if (Number_tickets > boletos_restantes){
-                return fallBack("No puedes pagar mas de lo que debes🤔❓");
-            } else if(Number_tickets > 12 || Number_tickets < 1) {
-                return fallBack("No pueden ser mayor que 12 o menor que 1🤔❓");
+        if (isNaN(Number_tickets) || Number_tickets > 12 || Number_tickets < 1 || Number_tickets > boletos_restantes) {
+            if (isNaN(Number_tickets)) {
+                return fallBack("Por favor ingresa un número válido de tickets.");
+            } else if (Number_tickets > 12 || Number_tickets < 1) {
+                return fallBack("El número de tickets debe estar entre 1 y 12.");
+            } else if (Number_tickets > boletos_restantes) {
+                return fallBack("No puedes pagar más de lo que debes.");
             }
-            
         }
         const totalAmount = Number_tickets * amount;
         await flowDynamic(`💳 Por favor realiza una transferencia SPEI por la cantidad de ${totalAmount} pesos a la siguiente información bancaria:💳 0957987465234233 Clabe: 0847575893020`);
