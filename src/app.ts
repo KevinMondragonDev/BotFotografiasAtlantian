@@ -5,7 +5,7 @@ import { BaileysProvider as Provider } from '@builderbot/provider-baileys';
 import { welcomeFlow } from './bienvenida';
 
 
-const PORT = process.env.PORT ?? 3008;
+const PORT = 3008;
 
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow]);
