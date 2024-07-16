@@ -8,49 +8,7 @@ const flowpagarBoletos = addKeyword(["2", "dos", "DOS", "boletos"])
 .addAction(async (_, { flowDynamic }) => {
     await flowDynamic(`Por favor, proporciona el nombre completo o correo electrónico con el que te registraste en nuestra plataforma Luxze.`);
 })
-/*
-    .addAction(async (_, { flowDynamic }) => {
-        await flowDynamic(`Muy bien, ¡Vamos a buscar tu evento! 📝👀 Necesito algunos datos importantes de su parte.🌟`);
-        await flowDynamic('🗣️Puedes cancelar el proceso en cualquier momento con la palabra "Cancelar"🚫');
-        await flowDynamic('¿Cuál es la clave de su evento? 🔑📅');
-    })
-    .addAction({ capture: true }, async (ctx, { state, flowDynamic, fallBack, endFlow }) => {
-        localClearHistory(state);
-        if (ctx.body.toLowerCase().includes('cancelar')) {
-            localClearHistory(state);
-            return endFlow("¿Tiene alguna otra consulta o algo en que pueda asistirte? 🤔💬");
-        }
 
-        if (!state.get('counter')) {
-            await state.update({ counter: 0 });
-        }
-
-        // Obtain and update the event key in the state
-        await state.update({ key: ctx.body });
-        const key = state.get('key');
-        const counter = state.get('counter');
-
-        const verificate = await ExistsEvent(key);
-        console.warn(counter);
-
-        if (verificate.success) {
-            localClearHistory(state);
-            await flowDynamic("¡Evento encontrado con éxito! 🎉📅");
-            await flowDynamic(`Tu evento es '${verificate.title}' 🎈🎊`);
-            await flowDynamic("Por favor nos podria proporcionar su nombre o Correo Electronico");
-            await flowDynamic("(con el que te registraste en nuestra plataforma Luxze📝📧)");
-            
-        } else {
-            if (counter < 2) {
-                await state.update({ counter: counter + 1 });
-                return fallBack("No encuentro esta clave. Prueba con algo como 'MKT2025' o 'INGSALLE24'🤔❓");
-            } else {
-                localClearHistory(state);
-                return endFlow("Lo siento, no puedo encontrar el evento. Llamaré a un asesor para asistirte. 📞👨‍💼");
-            }
-        }
-    })
-*/
 
 .addAction({ capture: true }, async (ctx, { state, flowDynamic,fallBack, endFlow }) => {
           
@@ -137,12 +95,7 @@ const flowpagarBoletos = addKeyword(["2", "dos", "DOS", "boletos"])
    }
 })
 
-//hasta aqui me quede 
 
-    
-    //hasta aqui me quede 
-
-     
     .addAction({ capture: true }, async (ctx, { state, flowDynamic,fallBack, endFlow }) => {
         if (ctx.body.toLowerCase().includes('1')) {
             localClearHistory(state);
@@ -180,14 +133,16 @@ const flowpagarBoletos = addKeyword(["2", "dos", "DOS", "boletos"])
         const amount = state.get('amount'); 
         const Number_tickets = state.get('Number_tickets');
 
-        if(Number_tickets > 12 || Number_tickets < 1 || Number_tickets < boletos_restantes ){
-            if (Number_tickets > boletos_restantes){
-                return fallBack("No puedes pagar mas de lo que debes🤔❓");
-            } else if(Number_tickets > 12 || Number_tickets < 1) {
-                return fallBack("No pueden ser mayor que 12 o menor que 1🤔❓");
+        if (isNaN(Number_tickets) || Number_tickets > 12 || Number_tickets < 1 || Number_tickets > boletos_restantes) {
+            if (isNaN(Number_tickets)) {
+                return fallBack("El número de boletos debe ser un número válido 🤔❓");
+            } else if (Number_tickets > boletos_restantes) {
+                return fallBack("No puedes pagar más de lo que debes 🤔❓");
+            } else if (Number_tickets > 12 || Number_tickets < 1) {
+                return fallBack("No pueden ser mayor que 12 o menor que 1 🤔❓");
             }
-            
         }
+        
         
         const WebURL = await GetURLWeb( id_graduado, Number_tickets, amount);
         console.warn(WebURL);

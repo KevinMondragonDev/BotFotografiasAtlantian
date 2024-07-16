@@ -1,7 +1,7 @@
 import { addKeyword, EVENTS } from "@builderbot/bot";
 
 import { createFlow } from "@builderbot/bot";
-import { ExistsEvent, validateGraduate } from "src/services/backend";
+import { ExistsEvent, validateGraduate, GetURLWeb } from "src/services/backend";
 import {flowfinish} from "src/Adios";
 
 const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
@@ -15,7 +15,7 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
         localClearHistory(state);
         if (ctx.body.toLowerCase().includes('cancelar')) {
             localClearHistory(state);
-            return endFlow("¿Tiene alguna otra consulta o algo en que pueda asistirte? 🤔💬");
+            return endFlow("Hasta Luego 💬");
         }
 
         if (!state.get('counter')) {
@@ -53,7 +53,7 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
           
          if (ctx.body.toLowerCase().includes('cancelar')) {
             localClearHistory(state);
-            return endFlow("¿Tiene alguna otra consulta o algo en que pueda asistirte? 🤔💬");
+            return endFlow("Hasta Luego 🤔💬");
         }
 
         if (!state.get('counter')) {
@@ -165,7 +165,7 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
         
     })
     .addAction({ capture: true }, async (ctx, { state, flowDynamic,fallBack, endFlow }) => {
-
+        const id_graduado = state.get('id_graduado');
         const boletos_contrato = state.get('boletos_contrato');
         const boletos_pagados = state.get('boletos_pagados');
         const boletos_restantes =boletos_contrato - boletos_pagados;
@@ -174,22 +174,40 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
         // Obtain and update the event key in the state
         await state.update({ Number_tickets: ctx.body });
         const amount = state.get('amount'); 
-        
         const Number_tickets = state.get('Number_tickets');
 
-        if(Number_tickets > 12 || Number_tickets < 1 || Number_tickets < boletos_restantes ){
-            if (Number_tickets > boletos_restantes){
-                return fallBack("No puedes pagar mas de lo que debes🤔❓");
-            } else if(Number_tickets > 12 || Number_tickets < 1) {
-                return fallBack("No pueden ser mayor que 12 o menor que 1🤔❓");
+        if (isNaN(Number_tickets) || Number_tickets > 12 || Number_tickets < 1 || Number_tickets > boletos_restantes) {
+            if (isNaN(Number_tickets)) {
+                return fallBack("El número de boletos debe ser un número válido 🤔❓");
+            } else if (Number_tickets > boletos_restantes) {
+                return fallBack("No puedes pagar más de lo que debes 🤔❓");
+            } else if (Number_tickets > 12 || Number_tickets < 1) {
+                return fallBack("No pueden ser mayor que 12 o menor que 1 🤔❓");
             }
-            
+        }
+        
+        
+        const WebURL = await GetURLWeb( id_graduado, Number_tickets, amount);
+        console.warn(WebURL);
+    
+        if (WebURL.success) {
+            //localClearHistory(state);
+            console.log(WebURL)
+            const {
+                success,
+                url
+            } = WebURL.url;
+     
+            await state.update({
+                success,
+                url
+            });
         }
         const totalAmount = Number_tickets * amount;
-        await flowDynamic(`💳 Por favor realiza una transferencia SPEI por la cantidad de ${totalAmount} pesos a la siguiente información bancaria:💳 0957987465234233 Clabe: 0847575893020`);
 
+        await flowDynamic(`💳 Por favor realiza una transferencia SPEI por la cantidad de ${totalAmount} pesos a la siguiente información bancaria:💳 0957987465234233 Clabe: 0847575893020`);
         // Añadir detalles sobre cómo y dónde enviar el comprobante, con uso de emojis para destacar acciones
-        await flowDynamic(`📸 Una vez realizada la transferencia, por favor envía una imagen del comprobante para confirmar tu pago. Puedes hacerlo accediendo a este enlace: (https://luxze.mx/comprobantes)`);
+        await flowDynamic(`📸 Una vez realizada la transferencia, por favor envía una imagen del comprobante para confirmar tu pago. Puedes hacerlo accediendo a este enlace: ${WebURL.url}`);
         
          
     })
