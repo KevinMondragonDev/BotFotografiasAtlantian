@@ -1,6 +1,7 @@
 //import {luxz_validate_graduate, luxzIDEvent } from 'src/config'
 const luxz_validate_graduate ='https://chatbot.luxze.mx/validate-graduate'
 const luxzIDEvent ='https://chatbot.luxze.mx/validate-event'
+const luxz_get_url_web ='https://chatbot.luxze.mx/get-url'
 /**
  * get calendar
  * @returns 
@@ -85,6 +86,47 @@ const validateGraduate = async (email_or_name: string) => {
     }
 };
 
+/**
+ * add to calendar
+ * @param body 
+ * @returns 
+ */
+const GetURLWeb = async (graduate_id: string, quantity: string, amount: string ) => {
+    try {
+        const payload = {
+            graduate_id: graduate_id,
+            quantity: quantity,
+            amount: amount
+        };
+
+        const response = await fetch(luxz_get_url_web, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return {
+
+            success: data.success === true,
+            url: data.url,
+            
+        };
+    } catch (err) {
+        console.error('Error:', err);
+        return { 
+            success: false,
+            graduate: null,
+            amount: 0 
+        };
+    }
+};
 
 
 
@@ -92,4 +134,4 @@ const validateGraduate = async (email_or_name: string) => {
 
 
 
-export { validateGraduate, ExistsEvent}
+export { validateGraduate, ExistsEvent , GetURLWeb}

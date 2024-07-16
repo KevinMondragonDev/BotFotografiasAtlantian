@@ -5,10 +5,7 @@ import { ExistsEvent, validateGraduate } from "src/services/backend";
 import {flowfinish} from "src/Adios";
 
 const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
-.addAction(async (_, { flowDynamic }) => {
-    await flowDynamic(`Por favor, proporciona el nombre completo o correo electrónico con el que te registraste en nuestra plataforma Luxze.`);
-})
-/*
+
     .addAction(async (_, { flowDynamic }) => {
         await flowDynamic(`Muy bien, ¡Vamos a buscar tu evento! 📝👀 Necesito algunos datos importantes de su parte.🌟`);
         await flowDynamic('🗣️Puedes cancelar el proceso en cualquier momento con la palabra "Cancelar"🚫');
@@ -50,7 +47,7 @@ const flowtesting = addKeyword(["1", "uno", "UNO", "primera"])
             }
         }
     })
-*/
+
 
     .addAction({ capture: true }, async (ctx, { state, flowDynamic,fallBack, endFlow }) => {
           
